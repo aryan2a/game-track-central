@@ -9,7 +9,109 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      game_achievements: {
+        Row: {
+          created_at: string
+          earned: number | null
+          game_id: string | null
+          id: string
+          total: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          earned?: number | null
+          game_id?: string | null
+          id?: string
+          total?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          earned?: number | null
+          game_id?: string | null
+          id?: string
+          total?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_achievements_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_ratings: {
+        Row: {
+          created_at: string
+          game_id: string | null
+          id: string
+          rating: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          game_id?: string | null
+          id?: string
+          rating?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          game_id?: string | null
+          id?: string
+          rating?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_ratings_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      games: {
+        Row: {
+          cover_image: string | null
+          created_at: string
+          id: string
+          last_played: string | null
+          platform: string
+          status: string
+          title: string
+          total_playtime: number | null
+          updated_at: string
+        }
+        Insert: {
+          cover_image?: string | null
+          created_at?: string
+          id?: string
+          last_played?: string | null
+          platform: string
+          status: string
+          title: string
+          total_playtime?: number | null
+          updated_at?: string
+        }
+        Update: {
+          cover_image?: string | null
+          created_at?: string
+          id?: string
+          last_played?: string | null
+          platform?: string
+          status?: string
+          title?: string
+          total_playtime?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

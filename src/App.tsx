@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,12 +6,11 @@ import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
 
-// Lazy load pages to improve initial load performance
 const Library = lazy(() => import("./pages/Library"));
 const AddGame = lazy(() => import("./pages/AddGame"));
 
-// Create a loading component
 const PageLoader = () => (
   <div className="flex h-screen items-center justify-center">
     <div className="text-center">
@@ -32,6 +30,7 @@ const App = () => (
       <BrowserRouter>
         <Suspense fallback={<PageLoader />}>
           <Routes>
+            <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<Index />} />
             <Route path="/library" element={<Library />} />
             <Route path="/add-game" element={<AddGame />} />
