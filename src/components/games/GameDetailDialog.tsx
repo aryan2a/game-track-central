@@ -1,4 +1,3 @@
-
 import { Clock, Gamepad2, Calendar, Trophy, ListChecks, BarChart3, Heart, Star } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Badge } from "../ui/badge";
@@ -7,6 +6,8 @@ import { Progress } from "../ui/progress";
 import { Separator } from "../ui/separator";
 import { GameData } from "./GameCard";
 import { cn } from "@/lib/utils";
+import { useGameAchievements } from "@/hooks/useGameAchievements";
+import { useState } from "react";
 
 interface GameDetailDialogProps {
   game: GameData | null;
@@ -16,6 +17,16 @@ interface GameDetailDialogProps {
 
 export default function GameDetailDialog({ game, open, onOpenChange }: GameDetailDialogProps) {
   if (!game) return null;
+
+  const { achievements, updateAchievements } = useGameAchievements(game.id);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [earnedCount, setEarnedCount] = useState(achievements?.earned || 0);
+  const [totalCount, setTotalCount] = useState(achievements?.total || 0);
+
+  const handleUpdateAchievements = () => {
+    setIsUpdating(false);
+    updateAchievements({ earned: earnedCount, total: totalCount });
+  };
 
   const statusColors = {
     playing: "bg-gaming-success text-white",
@@ -71,24 +82,69 @@ export default function GameDetailDialog({ game, open, onOpenChange }: GameDetai
               </Button>
             </div>
             
-            {game.achievements && (
-              <div className="space-y-1.5">
-                <h3 className="flex items-center gap-2 font-semibold">
-                  <Trophy className="h-5 w-5 text-gaming-purple" />
-                  Achievements
-                </h3>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold">{game.achievements.earned}/{game.achievements.total}</span>
-                  <span className="text-sm text-muted-foreground">
-                    ({Math.round((game.achievements.earned / game.achievements.total) * 100)}%)
-                  </span>
+            <div className="space-y-1.5">
+              <h3 className="flex items-center gap-2 font-semibold">
+                <Trophy className="h-5 w-5 text-gaming-purple" />
+                Achievements
+              </h3>
+              {isUpdating ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      className="w-20 rounded-md border px-2 py-1"
+                      value={earnedCount}
+                      onChange={(e) => setEarnedCount(Number(e.target.value))}
+                      min={0}
+                    />
+                    <span>/</span>
+                    <input
+                      type="number"
+                      className="w-20 rounded-md border px-2 py-1"
+                      value={totalCount}
+                      onChange={(e) => setTotalCount(Number(e.target.value))}
+                      min={0}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={handleUpdateAchievements}>
+                      Save
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsUpdating(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
                 </div>
-                <Progress 
-                  value={(game.achievements.earned / game.achievements.total) * 100}
-                  className="h-2 mt-2"
-                />
-              </div>
-            )}
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl font-bold">
+                      {achievements?.earned || 0}/{achievements?.total || 0}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      ({achievements?.total ? Math.round((achievements.earned / achievements.total) * 100) : 0}%)
+                    </span>
+                  </div>
+                  <Progress
+                    value={achievements?.total ? (achievements.earned / achievements.total) * 100 : 0}
+                    className="h-2 mt-2"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 mt-2"
+                    onClick={() => setIsUpdating(true)}
+                  >
+                    <Trophy className="h-4 w-4" />
+                    Update Achievements
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
           
           <Separator />
