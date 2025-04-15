@@ -7,6 +7,8 @@ import { Separator } from "../ui/separator";
 import { GameData } from "./GameCard";
 import { cn } from "@/lib/utils";
 import { useGameAchievements } from "@/hooks/useGameAchievements";
+import { useGamePlaytime } from "@/hooks/useGamePlaytime";
+import { useWishlist } from "@/hooks/useWishlist";
 import { useState } from "react";
 
 interface GameDetailDialogProps {
@@ -19,13 +21,23 @@ export default function GameDetailDialog({ game, open, onOpenChange }: GameDetai
   if (!game) return null;
 
   const { achievements, updateAchievements } = useGameAchievements(game.id);
+  const { playtime, addPlaytime } = useGamePlaytime(game.id);
+  const { isWishlisted, toggleWishlist } = useWishlist(game.id);
   const [isUpdating, setIsUpdating] = useState(false);
   const [earnedCount, setEarnedCount] = useState(achievements?.earned || 0);
   const [totalCount, setTotalCount] = useState(achievements?.total || 0);
+  const [playDuration, setPlayDuration] = useState(0);
 
   const handleUpdateAchievements = () => {
     setIsUpdating(false);
     updateAchievements({ earned: earnedCount, total: totalCount });
+  };
+
+  const handleLogPlaytime = () => {
+    if (playDuration > 0) {
+      addPlaytime({ duration: playDuration });
+      setPlayDuration(0);
+    }
   };
 
   const statusColors = {
@@ -34,6 +46,9 @@ export default function GameDetailDialog({ game, open, onOpenChange }: GameDetai
     backlog: "bg-gaming-secondary text-white",
     abandoned: "bg-gaming-warning text-white",
   };
+
+  const totalPlaytimeMinutes = (playtime || []).reduce((total, session) => total + session.duration, 0);
+  const totalPlaytimeHours = Math.round(totalPlaytimeMinutes / 60);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -74,12 +89,21 @@ export default function GameDetailDialog({ game, open, onOpenChange }: GameDetai
                 Playtime
               </h3>
               <p className="text-xl font-bold">
-                {game.totalPlaytime} {game.totalPlaytime === 1 ? 'hour' : 'hours'}
+                {totalPlaytimeHours} {totalPlaytimeHours === 1 ? 'hour' : 'hours'}
               </p>
-              <Button variant="outline" size="sm" className="gap-1.5 mt-2">
-                <Clock className="h-4 w-4" />
-                Log Time
-              </Button>
+              <div className="flex gap-2 mt-2">
+                <input
+                  type="number"
+                  className="w-20 rounded-md border px-2 py-1"
+                  value={playDuration}
+                  onChange={(e) => setPlayDuration(Math.max(0, parseInt(e.target.value) || 0))}
+                  min={0}
+                  placeholder="Minutes"
+                />
+                <Button size="sm" onClick={handleLogPlaytime} disabled={playDuration <= 0}>
+                  Log Time
+                </Button>
+              </div>
             </div>
             
             <div className="space-y-1.5">
@@ -175,9 +199,13 @@ export default function GameDetailDialog({ game, open, onOpenChange }: GameDetai
               <BarChart3 className="h-4 w-4" />
               View Stats
             </Button>
-            <Button variant="ghost" className="gap-1.5 text-gaming-warning">
-              <Heart className="h-4 w-4" />
-              Add to Favorites
+            <Button 
+              variant={isWishlisted ? "default" : "ghost"}
+              className="gap-1.5 text-gaming-warning"
+              onClick={() => toggleWishlist(game.id)}
+            >
+              <Heart className={cn("h-4 w-4", isWishlisted && "fill-current")} />
+              {isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
             </Button>
           </div>
         </div>

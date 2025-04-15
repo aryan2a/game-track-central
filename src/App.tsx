@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 const Library = lazy(() => import("./pages/Library"));
 const AddGame = lazy(() => import("./pages/AddGame"));
 const Settings = lazy(() => import("./pages/Settings"));
+const Stats = lazy(() => import("./pages/Stats"));
 
 const PageLoader = () => (
   <div className="flex h-screen items-center justify-center">
@@ -36,7 +37,7 @@ const App = () => (
             <Route path="/library" element={<Library />} />
             <Route path="/add-game" element={<AddGame />} />
             <Route path="/settings" element={<Settings />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/stats" element={<Stats />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
