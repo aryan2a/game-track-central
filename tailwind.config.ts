@@ -52,6 +52,17 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				gaming: {
+					purple: '#8B5CF6',
+					darkPurple: '#7E69AB',
+					darkBg: '#1A1F2C',
+					accent: '#D946EF',
+					secondary: '#6E59A5',
+					highlight: '#0EA5E9',
+					success: '#10B981',
+					warning: '#F97316',
+					lightText: '#F1F0FB'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
